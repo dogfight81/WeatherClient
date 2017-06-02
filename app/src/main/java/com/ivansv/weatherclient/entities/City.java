@@ -1,11 +1,14 @@
 package com.ivansv.weatherclient.entities;
 
-import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.annotations.Required;
 
-public class City implements RealmModel {
+public class City extends RealmObject {
+    @Required
     private String cityName;
     private String country;
-    private long locationKey;
+    @Required
+    private String locationKey;
 
     public String getCityName() {
         return cityName;
@@ -23,11 +26,11 @@ public class City implements RealmModel {
         this.country = country;
     }
 
-    public long getLocationKey() {
+    public String getLocationKey() {
         return locationKey;
     }
 
-    public void setLocationKey(long locationKey) {
+    public void setLocationKey(String locationKey) {
         this.locationKey = locationKey;
     }
 }

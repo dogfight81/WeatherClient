@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherClient</string>
+    <string name="base_api_url">@string/BASE_API_URL</string>
 </resources>
