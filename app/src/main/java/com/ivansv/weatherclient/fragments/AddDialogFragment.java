@@ -83,6 +83,9 @@ public class AddDialogFragment extends DialogFragment {
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 try {
                     CityApi[] cities = objectMapper.readValue(json, CityApi[].class);
+                    if (cities.length == 0) {
+                        Toast.makeText(getContext(), R.string.msg_nothing_found, Toast.LENGTH_SHORT).show();
+                    }
                     cityApiAdapter.setListData(cities);
                     rvCities.setVisibility(View.VISIBLE);
                     pbLoading.setVisibility(View.INVISIBLE);
