@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">WeatherClient</string>
     <string name="base_api_url">@string/BASE_API_URL</string>
+    <string name="api_key">@string/API_KEY</string>
+
+    <string name="tittle_deleting">deleting city</string>
+
+    <string name="msg_deleting_confirmation">Are you sure you want to remove this city from DB?</string>
+    <string name="msg_err_parsing">parsing error</string>
+
+    <string name="btn_no">no</string>
+    <string name="btn_yes">yes</string>
+    <string name="btn_details">details</string>
+    <string name="btn_search">search</string>
+
+    <string name="menu_item_delete">delete</string>
+    <string name="msg_already_added">this city has already added</string>
+    <string name="menu_item_search">search</string>
 </resources>

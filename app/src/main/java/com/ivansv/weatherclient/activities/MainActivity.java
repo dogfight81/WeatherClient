@@ -2,14 +2,18 @@ package com.ivansv.weatherclient.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
 import android.view.View;
 
+import com.ivansv.weatherclient.Constants;
 import com.ivansv.weatherclient.R;
 import com.ivansv.weatherclient.adapters.CitiesAdapter;
-import com.ivansv.weatherclient.entities.City;
+import com.ivansv.weatherclient.entities.CityRealm;
 import com.ivansv.weatherclient.fragments.AddDialogFragment;
 import com.ivansv.weatherclient.interfaces.OnRecyclerItemClickListener;
 
@@ -19,18 +23,18 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXTRA_CITY_NAME = "cityName";
-    public static final String EXTRA_COUNTRY = "country";
-    public static final String EXTRA_LOCATION_KEY = "location";
+
+
 
     private CitiesAdapter citiesAdapter = new CitiesAdapter();
     private Realm realm;
-    private RealmResults<City> realmResults;
+    private RealmResults<CityRealm> realmResults;
 
-    private RealmChangeListener<RealmResults<City>> realmChangeListener = new RealmChangeListener<RealmResults<City>>() {
+    private RealmChangeListener<RealmResults<CityRealm>> realmChangeListener = new RealmChangeListener<RealmResults<CityRealm>>() {
         @Override
-        public void onChange(RealmResults<City> element) {
+        public void onChange(RealmResults<CityRealm> element) {
             citiesAdapter.setListData(element);
+            realmResults.removeChangeListener(this);
         }
     };
 
@@ -47,11 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     private OnRecyclerItemClickListener onRecyclerItemClickListener = new OnRecyclerItemClickListener() {
         @Override
-        public void onItemClick(City city) {
+        public void onItemClick(int position) {
             Intent intent = new Intent(MainActivity.this, CityDetailActivity.class);
-            intent.putExtra(EXTRA_CITY_NAME, city.getCityName());
-            intent.putExtra(EXTRA_COUNTRY, city.getCountry());
-            intent.putExtra(EXTRA_LOCATION_KEY, city.getLocationKey());
+            CityRealm city = citiesAdapter.getCity(position);
+            intent.putExtra(Constants.EXTRA_CITY_NAME, city.getCityName());
+            intent.putExtra(Constants.EXTRA_COUNTRY, city.getCountry());
+            intent.putExtra(Constants.EXTRA_LOCATION_KEY, city.getLocationKey());
             startActivity(intent);
         }
     };
@@ -70,20 +75,44 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
-    protected void onResume() {
+    protected void onStart() {
+        super.onStart();
         realm = Realm.getDefaultInstance();
-        realmResults = realm.where(City.class).findAllAsync();
-        realmResults.addChangeListener(realmChangeListener);
-        super.onResume();
+        upateList();
     }
 
     @Override
-    protected void onPause() {
-        realmResults.removeChangeListener(realmChangeListener);
+    protected void onStop() {
         realm.close();
-        super.onPause();
+        super.onStop();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                realmResults = realm.where(CityRealm.class).contains("searchName", newText.toLowerCase()).findAllAsync();
+                realmResults.addChangeListener(realmChangeListener);
+                citiesAdapter.setQueryText(newText.toLowerCase());
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void upateList() {
+        realmResults = realm.where(CityRealm.class).findAllAsync();
+        realmResults.addChangeListener(realmChangeListener);
+    }
 
 }

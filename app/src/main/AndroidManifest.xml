@@ -23,6 +23,9 @@
 
         <service
             android:name=".services.SearchIntentService"
+            android:exported="false" />
+        <service
+            android:name=".services.FetchWeatherService"
             android:exported="false"></service>
     </application>
 

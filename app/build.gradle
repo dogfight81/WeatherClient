@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
+    signingConfigs {
+        appConfig {
+            keyAlias 'key0'
+            keyPassword '111122'
+            storeFile file('keyStore.jks')
+            storePassword '111122'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
@@ -11,19 +19,21 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue 'string', 'BASE_API_URL', 'http://dataservice.accuweather.com'
-        }
 
-        debug {
+        production {
+            resValue 'string', 'BASE_API_URL', 'http://api.accuweather.com'
+            resValue 'string', 'API_KEY', "S2t8gIhdiW108cz3eFFJ0NKpJdQSdZkT"
+            signingConfig signingConfigs.appConfig
+        }
+        development {
             resValue 'string', 'BASE_API_URL', 'http://dataservice.accuweather.com'
+            resValue 'string', 'API_KEY', "S2t8gIhdiW108cz3eFFJ0NKpJdQSdZkT"
+            signingConfig signingConfigs.appConfig
         }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -31,10 +41,12 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
